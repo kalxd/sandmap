@@ -1,0 +1,11 @@
+{
+	"manifest_version": 2,
+	"name": "sandmap",
+	"version": "0.1.0",
+	"description": "可在读史时，作为沙盒地图使用。",
+
+	"options_ui": {
+		"page": "option.html",
+		"open_in_tab": true
+	}
+}
