@@ -1,14 +1,14 @@
 {
-  "dependencies": {
-    "drifloon": "0.20.5",
-    "mithril": "^2.2.2",
-    "purify-ts": "^2.0.1"
-  },
-  "devDependencies": {
-    "@types/firefox-webext-browser": "^111.0.1",
-    "@types/mithril": "^2.0.12",
-    "ts-loader": "^9.4.4",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
-  }
+	"dependencies": {
+		"drifloon": "0.20.5",
+		"mithril": "^2.2.2",
+		"purify-ts": "^2.0.1"
+	},
+	"devDependencies": {
+		"@types/firefox-webext-browser": "^111.0.1",
+		"@types/mithril": "^2.0.12",
+		"ts-loader": "^9.4.4",
+		"webpack": "^5.88.2",
+		"webpack-cli": "^5.1.4"
+	}
 }
