@@ -2,15 +2,15 @@ import * as m from "mithril";
 import { MainLayout } from "drifloon";
 import { waitting } from "drifloon/module/loading";
 import { readAll } from "./internal/storage";
-import Form, { FormAttr } from "./option/form";
+import Main, { OptionFormAttr } from "./option/form";
 import { EitherAsync, Right } from "purify-ts";
 
 const App = (): m.Component => {
-	const [update, Wait] = waitting<FormAttr>();
+	const [update, Wait] = waitting<OptionFormAttr>();
 
 	update(() => EitherAsync.fromPromise(async () => {
 		const cache = await readAll();
-		return Right(m(Form, { cache }));
+		return Right(m(Main, { cache }));
 	}));
 
 	return {
