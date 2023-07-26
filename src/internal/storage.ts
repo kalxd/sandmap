@@ -1,19 +1,18 @@
-import { MaybeAsync, Codec, Maybe } from "purify-ts";
+import { Codec, Maybe } from "purify-ts";
 import * as V from "purify-ts";
 
 export type Token = string;
 
-const localData = Codec.interface({
+const userCache = Codec.interface({
 	token: V.string
 });
 
-export type LocalData = V.GetType<typeof localData>;
+export type UserCache = V.GetType<typeof userCache>;
 
-export const readAll = (): MaybeAsync<LocalData> =>
-	MaybeAsync.fromPromise(() =>
-		browser.storage.local.get()
-			.then(V.nullable(localData).decode)
-			.then(s => s.toMaybe().chain(Maybe.fromNullable)));
+export const readAll = (): Promise<Maybe<UserCache>> =>
+	browser.storage.local.get()
+		.then(V.maybe(userCache).decode)
+		.then(s => s.toMaybe().join())
 
-export const writeAll = (data: LocalData): Promise<void> =>
+export const writeAll = (data: UserCache): Promise<void> =>
 	browser.storage.local.set(data);
