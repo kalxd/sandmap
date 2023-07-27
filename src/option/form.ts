@@ -1,5 +1,6 @@
 import * as m from "mithril";
 import { FormData } from "drifloon/data/ref";
+import { RequireField } from "drifloon/element/form";
 import { Form } from "drifloon/module/form";
 import { Header2 } from "drifloon/element/header";
 import { Grid, Column, GridAttr, GridMiddleAlignType, ColumnAttr } from "drifloon/element/grid";
@@ -31,7 +32,7 @@ const Main = (vnode: m.Vnode<OptionFormAttr>): m.Component<OptionFormAttr> => {
 				Header2("天地沙盒设置中心"),
 				m(Segment, { shape: SegmentShape.Stack }, [
 					m(Form, [
-						m("div.field.required", [
+						m(RequireField, [
 							m("label", "您的token"),
 							m("input")
 						]),
