@@ -10,11 +10,16 @@ const App = (): m.Component => {
 
 	update(() => EitherAsync.fromPromise(async () => {
 		const cache = await readAll();
-		return Right(m(Main, { cache }));
+		return Right({
+			view: () => m(Main, { cache })
+		});
 	}));
 
 	return {
-		view: () => m(MainLayout, m(Wait))
+		view: () => m(
+			MainLayout,
+			m("div.ui.basic.segment", m(Wait))
+		)
 	}
 };
 
