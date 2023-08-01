@@ -7,21 +7,21 @@ import { Header2 } from "drifloon/element/header";
 import { Grid, Column, GridAttr, GridMiddleAlignType, ColumnAttr } from "drifloon/element/grid";
 import { Button } from "drifloon/element/button";
 import { Segment, SegmentShape } from "drifloon/element/segment";
-import { UserCache, writeAll } from "../internal/storage";
+import { SettingInfo, saveSetting } from "../internal/storage";
 import { Either, Maybe } from "purify-ts";
 import { EmLevel, Wide } from "drifloon/data/var";
 import { isNotEmpty, must } from "drifloon/data/validate";
 
 export interface OptionFormAttr {
-	cache: Maybe<UserCache>;
+	cache: Maybe<SettingInfo>;
 }
 
-const checkForm = (cache: UserCache): Either<Array<string>, UserCache> =>
+const checkForm = (cache: SettingInfo): Either<Array<string>, SettingInfo> =>
 	must("token", isNotEmpty(cache.token))
 		.collect(token => ({ token }));
 
 const Main = (vnode: m.Vnode<OptionFormAttr>): m.Component<OptionFormAttr> => {
-	const formdata = new FormData<UserCache>(vnode.attrs.cache.orDefault({ token: "" }));
+	const formdata = new FormData<SettingInfo>(vnode.attrs.cache.orDefault({ token: "" }));
 
 	return {
 		view: () => {
@@ -35,7 +35,7 @@ const Main = (vnode: m.Vnode<OptionFormAttr>): m.Component<OptionFormAttr> => {
 			};
 
 			const validateE = () => formdata.validate(checkForm)
-				.ifRight(writeAll);
+				.ifRight(saveSetting);
 
 			return m(Grid, gridAttr, m(Column, colAttr, [
 				Header2("天地沙盒设置中心"),
