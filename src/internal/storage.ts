@@ -1,4 +1,4 @@
-import { Codec, Maybe, MaybeAsync, string as cstring, GetType, maybe } from "purify-ts";
+import { Codec, MaybeAsync, string as cstring, GetType, maybe } from "purify-ts";
 
 const SETTING_KEY = "setting";
 
@@ -20,11 +20,3 @@ export const saveSetting = (setting: SettingInfo): Promise<void> =>
 	browser.storage.local.set({
 		[SETTING_KEY]: setting
 	});
-
-export const readAll = (): Promise<Maybe<SettingInfo>> =>
-	browser.storage.local.get()
-		.then(maybe(settingInfo).decode)
-		.then(s => s.toMaybe().join())
-
-export const writeAll = (data: SettingInfo): Promise<void> =>
-	browser.storage.local.set(data);

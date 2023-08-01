@@ -3,7 +3,8 @@ const path = require("path");
 const config = {
 	mode: "production",
 	entry: {
-		option: "./src/option.ts"
+		option: "./src/option.ts",
+		background: "./src/background.ts"
 	},
 	output: {
 		path: path.resolve("./webextension/dist")
