@@ -1,4 +1,4 @@
-import { Codec, MaybeAsync, string as cstring, GetType, maybe } from "purify-ts";
+import { Codec, string as cstring, GetType, maybe, Maybe } from "purify-ts";
 
 const SETTING_KEY = "setting";
 
@@ -9,12 +9,11 @@ const settingInfo = Codec.interface({
 
 export type SettingInfo = GetType<typeof settingInfo>;
 
-export const readSetting = (): MaybeAsync<SettingInfo> =>
-	MaybeAsync.fromPromise(() =>
-		browser.storage.local.get(SETTING_KEY)
-			.then(s => s[SETTING_KEY])
-			.then(maybe(settingInfo).decode)
-			.then(s => s.toMaybe().join()));
+export const readSetting = (): Promise<Maybe<SettingInfo>> =>
+	browser.storage.local.get(SETTING_KEY)
+		.then(s => s[SETTING_KEY])
+		.then(maybe(settingInfo).decode)
+		.then(a => a.toMaybe().join())
 
 export const saveSetting = (setting: SettingInfo): Promise<void> =>
 	browser.storage.local.set({

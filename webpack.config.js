@@ -4,7 +4,8 @@ const config = {
 	mode: "production",
 	entry: {
 		option: "./src/option.ts",
-		background: "./src/background.ts"
+		background: "./src/background.ts",
+		map: "./src/map.ts"
 	},
 	output: {
 		path: path.resolve("./webextension/dist")
