@@ -14,8 +14,11 @@
 	},
 
 	"permissions": [
-		"storage"
+		"storage",
+		"*://api.tianditu.gov.cn/*"
 	],
+
+	"content_security_policy": "script-src 'self' https://api.tianditu.gov.cn; object-src 'self'; script-src 'self' 'unsafe-inline",
 
 	"background": {
 		"scripts": ["dist/background.js"]
