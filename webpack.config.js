@@ -3,12 +3,10 @@ const path = require("path");
 const config = {
 	mode: "production",
 	entry: {
-		option: "./src/option.ts",
-		background: "./src/background.ts",
-		map: "./src/map.ts"
+		main: "./src/main.ts"
 	},
 	output: {
-		path: path.resolve("./webextension/dist")
+		path: path.resolve("./dist")
 	},
 	module: {
 		rules: [
