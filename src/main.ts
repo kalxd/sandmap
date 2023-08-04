@@ -4,6 +4,7 @@ import { readSetting } from "./internal/storage";
 import { IORef } from "drifloon/data/ref";
 import { State } from "./internal/state";
 import { SettingForm } from "./widget/settingform";
+import { MainMap, MapAttr } from "./widget/map";
 
 interface RouterAttr {
 	state: IORef<State>
@@ -13,8 +14,12 @@ const Router: m.Component<RouterAttr> = {
 	view: ({ attrs }) => {
 		return attrs.state.askAt("setting")
 			.caseOf({
-				Just: _ => m("h1", "hello world"),
-				Nothing: () => m(SettingForm, attrs)
+				Just: setting => m.fragment({}, [
+					m<MapAttr, {}>(MainMap, { setting, state: attrs.state })
+				]),
+				Nothing: () => m.fragment({}, [
+					m(SettingForm, attrs)
+				])
 			})
 	}
 };
