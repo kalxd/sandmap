@@ -16,6 +16,7 @@ export const readSetting = (): Maybe<SettingOption> => {
 };
 
 export const writeSetting = (setting: SettingOption): void => {
-	const o = JSON.stringify(setting);
+	const c = settiongOption.encode(setting);
+	const o = JSON.stringify(c);
 	localStorage.setItem(SETTING_KEY, o);
 };
