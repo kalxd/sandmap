@@ -13,6 +13,9 @@ declare module T {
 
 	class LngLat {
 		constructor(lng: number, lat: number);
+
+		getLng(): number;
+		getLat(): number;
 	}
 
 	class Control {

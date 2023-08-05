@@ -1,6 +1,10 @@
+import { readLastLngLat } from "./storage";
+
 export const init = (el: Element): T.Map => {
+	const lastState = readLastLngLat();
+
 	const v = new T.Map(el);
-	v.centerAndZoom(new T.LngLat(116.40769, 39.89945), 12);
+	v.centerAndZoom(lastState.lnglat, lastState.zoom);
 
 	{
 		const control = new T.Control.Zoom({
