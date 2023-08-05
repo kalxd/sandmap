@@ -1,4 +1,4 @@
-import { readLastLngLat } from "./storage";
+import { readLastLngLat, writeLastLngLat } from "./storage";
 
 export const init = (el: Element): T.Map => {
 	const lastState = readLastLngLat();
@@ -22,6 +22,12 @@ export const init = (el: Element): T.Map => {
 		const control = new T.Control.MapType();
 		v.addControl(control);
 	}
+
+	v.addEventListener("moveend", e => {
+		const center = e.target.getCenter();
+		const zoom = e.target.getZoom();
+		writeLastLngLat({ zoom, lnglat: center });
+	});
 
 	return v;
 };

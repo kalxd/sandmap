@@ -41,12 +41,27 @@ declare module T {
 		class MapType extends Control {}
 	}
 
+	type MapBlankEventName = "zoomend" | "moveend";
+	type MapBlankEvent<T extends string> = {
+		type: T;
+		target: Map;
+	};
 
 	class Map {
 		constructor(dom: Element);
 
 		centerAndZoom(lgnlat: LngLat, zoom: number): void;
-
+		getZoom(): number;
+		getCenter(): LngLat;
 		addControl<T extends Control>(control: T): void;
+
+		addEventListener<Name extends MapBlankEventName>(
+			eventName: Name,
+			cb: (event: MapBlankEvent<Name>) => void
+		): void;
+		removeEventListener<Name extends MapBlankEventName>(
+			eventName: Name,
+			cb: (event: MapBlankEvent<Name>) => void
+		): void;
 	}
 }

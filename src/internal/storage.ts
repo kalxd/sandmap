@@ -31,19 +31,16 @@ export const writeSetting = (setting: SettingOption): void => {
 // 最近地图显示的坐标
 const LAST_LNGLAT_KEY = "last_lnglat";
 
-const DEFAULT_LNGLAT = new T.LngLat(116.40769, 39.89945);
-const DEFAULT_ZOOM = 12;
-const DEFAULT_TMAP_STATE: TMapLastState = {
-	zoom: DEFAULT_ZOOM,
-	lnglat: DEFAULT_LNGLAT
-};
-
 export const readLastLngLat = (): TMapLastState => {
 	const o = localStorage.getItem(LAST_LNGLAT_KEY);
 	return Maybe.fromNullable(o)
 		.map(JSON.parse)
 		.chain(s => tmapLastStateCodec.decode(s).toMaybe())
-		.orDefault(DEFAULT_TMAP_STATE);
+		.orDefaultLazy(() => {
+			const zoom = 12;
+			const lnglat = new T.LngLat(116.40769, 39.89945);
+			return { zoom, lnglat };
+		});
 };
 
 export const writeLastLngLat = (state: TMapLastState): void => {
