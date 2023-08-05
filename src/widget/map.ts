@@ -4,31 +4,31 @@ import { waitting } from "drifloon/module/loading";
 import { State, loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Right } from "purify-ts";
+import * as TMap from "../internal/tmap";
+
+const MapWidget: m.Component = {
+	oncreate: vnode => {
+		console.log(vnode.dom);
+		TMap.init(vnode.dom);
+	},
+	view: () => m("div", { style: "width: 100%; height: calc(100% - 42px); "}),
+};
 
 const MapContainer: m.Component = {
-	oncreate: vnode => {
-		const v = new T.Map(vnode.dom);
-		v.centerAndZoom(new T.LngLat(116.40769, 39.89945), 12);
-
-		{
-			const control = new T.Control.Zoom({
-				position: T_ANCHOR_BOTTOM_RIGHT
-			});
-			v.addControl(control);
-		}
-
-		{
-			const control = new T.Control.Scale();
-			v.addControl(control);
-		}
-
-		{
-			const control = new T.Control.MapType();
-			v.addControl(control);
-		}
-	},
 	view: () => {
-		return m("div", { style: "width: 100%; height: 100%" });
+		return m.fragment({}, [
+			m("div", m("div.ui.top.attached.menu", [
+				m("div.item", "工具栏"),
+				m("div.item", m("div.ui.icon.input", [
+					m("input", { placeholder: "搜索" }),
+					m("i.icon.search")
+				])),
+				m("ui.right.menu", [
+					m("div.item", "菜单")
+				])
+			])),
+			m(MapWidget)
+		]);
 	}
 };
 
