@@ -5,18 +5,27 @@ import { State, loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Right } from "purify-ts";
 
-declare global {
-
-	class T {
-		static Map: any;
-		static LngLat: any;
-	}
-}
-
 const MapContainer: m.Component = {
 	oncreate: vnode => {
 		const v = new T.Map(vnode.dom);
 		v.centerAndZoom(new T.LngLat(116.40769, 39.89945), 12);
+
+		{
+			const control = new T.Control.Zoom({
+				position: T_ANCHOR_BOTTOM_RIGHT
+			});
+			v.addControl(control);
+		}
+
+		{
+			const control = new T.Control.Scale();
+			v.addControl(control);
+		}
+
+		{
+			const control = new T.Control.MapType();
+			v.addControl(control);
+		}
 	},
 	view: () => {
 		return m("div", { style: "width: 100%; height: 100%" });
