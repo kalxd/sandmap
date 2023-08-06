@@ -20,7 +20,7 @@ const Router: m.Component<RouterAttr> = {
 				Nothing: () => m.fragment({}, [
 					m(SettingForm, attrs)
 				])
-			})
+			});
 	}
 };
 

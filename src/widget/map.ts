@@ -5,6 +5,7 @@ import { State, loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Right } from "purify-ts";
 import * as TMap from "../internal/tmap";
+import { AppMenu } from "./internal/appmenu";
 
 const MapWidget: m.Component = {
 	oncreate: vnode => {
@@ -24,7 +25,7 @@ const MapContainer: m.Component = {
 					m("i.icon.search")
 				])),
 				m("ui.right.menu", [
-					m("div.item", "菜单")
+					m(AppMenu)
 				])
 			])),
 			m(MapWidget)
@@ -39,7 +40,6 @@ export interface MapAttr {
 
 export const MainMap = (vnode: m.Vnode<MapAttr>): m.Component<MapAttr> => {
 	const [update, Wait] = waitting();
-
 
 	update(() => EitherAsync.fromPromise(async () => {
 		await loadMapScript(vnode.attrs.setting.token);
