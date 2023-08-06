@@ -6,13 +6,10 @@ import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
 import * as TMap from "../internal/tmap";
 import { AppMenu } from "./internal/appmenu";
-import { AppLayer } from "./internal/applayer";
+import { LayerSidebar } from "./internal/layersidebar";
 
 const MapWidget: m.Component = {
-	oncreate: vnode => {
-		console.log(vnode.dom);
-		TMap.init(vnode.dom);
-	},
+	oncreate: vnode => TMap.init(vnode.dom),
 	view: () => m("div", { style: "width: 100%; height: calc(100% - 49px); "}),
 };
 
@@ -22,7 +19,7 @@ const MapContainer = (): m.Component => {
 	return {
 		view: () => {
 			const appLayer = showAppLayerRef.asks(Maybe.fromFalsy)
-				.map(_ => m(AppLayer));
+				.map(_ => m(LayerSidebar));
 
 			const appLayerToggleE = () => showAppLayerRef.update(b => !b);
 
