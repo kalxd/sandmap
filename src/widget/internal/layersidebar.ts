@@ -4,7 +4,7 @@ import { AddLayerModal } from "./addlayermodal";
 import { Maybe } from "purify-ts";
 
 const openAddLayerModal = async () => {
-	const r = await modal<Maybe<string>>(AddLayerModal as any, {});
+	const r = await modal<Maybe<string>>(AddLayerModal);
 	console.log(r);
 };
 

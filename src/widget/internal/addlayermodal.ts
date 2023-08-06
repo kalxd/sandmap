@@ -21,11 +21,9 @@ export const AddLayerModal = (): m.Component<ResolveModalAttr<Maybe<string>>> =>
 	return {
 		view: ({ attrs }) => {
 			const actionAttr: ModalActionAttr = {
-				connectResolve: r => r.caseOf({
-					Right: _ => fd.validate(validateForm)
-						.ifRight(v => attrs.connectResolve(Just(v))),
-					Left: _ => attrs.connectResolve(Nothing)
-				})
+				connectPositive: () => fd.validate(validateForm)
+					.ifRight(v => attrs.connectResolve(Just(v))),
+				connectNegative: () => attrs.connectResolve(Nothing),
 			};
 
 			return m(Modal, attrs, [
