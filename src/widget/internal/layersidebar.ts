@@ -1,7 +1,7 @@
 import * as m from "mithril";
 import { modal } from "drifloon/module/modal";
 import { AddLayerModal } from "./addlayermodal";
-import { Maybe, NonEmptyList } from "purify-ts";
+import { Maybe } from "purify-ts";
 import * as State from "../../internal/state";
 import { IORef } from "drifloon/data/ref";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
@@ -59,7 +59,7 @@ export const LayerSidebar = (vnode: m.Vnode<LayerSidebarAttr>): m.Component<Laye
 	return {
 		view: ({ attrs }) => {
 			const active = attrs.state.asks(s => s.userData.active);
-			const layerList = attrs.state.asks(s => NonEmptyList.unsafeCoerce(s.userData.layerList))
+			const layerList = attrs.state.asks(s => s.userData.layerList)
 				.map((layer, i) => {
 					const isActive = active === i;
 					return m<MenuItemAttr, {}>(MenuItem, {
