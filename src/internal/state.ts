@@ -1,4 +1,4 @@
-import { List, Maybe } from "purify-ts";
+import { List, Maybe, NonEmptyList } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
 import { UserData } from "./codec";
@@ -38,6 +38,10 @@ export const getState = (): IORef<State> => {
 	return new IORef({ userData: data });
 };
 
+const saveState = (state: IORef<State>): void => {
+	writeUserData(state.askAt("userData"));
+};
+
 export const setLayerVisibleAt = (index: number, isVisible: boolean , state: IORef<State>): void => {
 	state.updateAt("userData", s => List.at(index, s.layerList)
 		.map(layer => {
@@ -47,5 +51,27 @@ export const setLayerVisibleAt = (index: number, isVisible: boolean , state: IOR
 		})
 		.orDefaultLazy(() => s));
 
-	writeUserData(state.askAt("userData"));
+	saveState(state);
+};
+
+export const activeLayer = (index: number, state: IORef<State>): void => {
+	state.updateAt("userData", s => ({ ...s, active: index }));
+	saveState(state);
+};
+
+export const addLayer = (name: string, state: IORef<State>): void => {
+	state.updateAt("userData", s => {
+		const n = s.layerList.length
+		const layer = {
+			name,
+			isVisible: true
+		};
+		const layerList = s.layerList.concat([layer]);
+		return {
+			layerList,
+			active: n
+		};
+	});
+
+	saveState(state);
 };
