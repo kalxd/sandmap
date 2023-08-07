@@ -2,9 +2,11 @@ import {
 	string as cstring,
 	Codec,
 	GetType,
-	Maybe
+	Maybe,
+    NonEmptyList,
+    Just
 } from "purify-ts";
-import { TMapLastState, tmapLastStateCodec } from "./codec";
+import { LayerData, TMapLastData, UserData, tmapLastStateCodec, userDataCodec } from "./codec";
 
 const SETTING_KEY = "setting";
 
@@ -31,7 +33,7 @@ export const writeSetting = (setting: SettingOption): void => {
 // 最近地图显示的坐标
 const LAST_LNGLAT_KEY = "last_lnglat";
 
-export const readLastLngLat = (): TMapLastState => {
+export const readLastLngLat = (): TMapLastData => {
 	const o = localStorage.getItem(LAST_LNGLAT_KEY);
 	return Maybe.fromNullable(o)
 		.map(JSON.parse)
@@ -43,7 +45,31 @@ export const readLastLngLat = (): TMapLastState => {
 		});
 };
 
-export const writeLastLngLat = (state: TMapLastState): void => {
+export const writeLastLngLat = (state: TMapLastData): void => {
 	const r = tmapLastStateCodec.encode(state);
 	localStorage.setItem(LAST_LNGLAT_KEY, JSON.stringify(r));
 }
+
+// 用户数据
+const USER_DATA_KEY = "user_data";
+
+const layerDef: LayerData = Object.freeze({
+	name: "默认",
+	isVisible: true
+});
+
+export const readUserData = (): UserData => {
+	const o = localStorage.getItem(USER_DATA_KEY);
+	return Maybe.fromNullable(o)
+		.map(JSON.parse)
+		.chain(s => userDataCodec.decode(s).toMaybe())
+		.orDefaultLazy(() => ({
+			layerList: NonEmptyList([layerDef]),
+			active: 0
+		}));
+};
+
+export const writeUserData = (data: UserData): void => {
+	const r = userDataCodec.encode(data);
+	localStorage.setItem(USER_DATA_KEY, JSON.stringify(r));
+};

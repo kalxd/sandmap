@@ -11,14 +11,14 @@ import { Button } from "drifloon/element/button";
 import { EmLevel } from "drifloon/data/var";
 import { must, isNotEmpty } from "drifloon/data/validate";
 import { SettingOption, writeSetting } from "../internal/storage";
-import { State } from "../internal/state";
+import { SettingState } from "../internal/state";
 
 interface SettingFormData {
 	token: string;
 }
 
 export interface SettingFormAttr {
-	state: IORef<State>;
+	state: IORef<SettingState>;
 }
 
 const validateForm = (data: SettingFormData): Either<Array<string>, SettingOption> =>

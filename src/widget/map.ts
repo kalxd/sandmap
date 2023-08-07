@@ -1,7 +1,7 @@
 import * as m from "mithril";
 import { IORef } from "drifloon/data/ref";
 import { waitting } from "drifloon/module/loading";
-import { State, loadMapScript } from "../internal/state";
+import { SettingState, getState, loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
 import * as TMap from "../internal/tmap";
@@ -15,11 +15,11 @@ const MapWidget: m.Component = {
 
 const MapContainer = (): m.Component => {
 	const showAppLayerRef = new IORef<boolean>(false);
-
+	const state = getState();
 	return {
 		view: () => {
 			const appLayer = showAppLayerRef.asks(Maybe.fromFalsy)
-				.map(_ => m(LayerSidebar));
+				.map(_ => m(LayerSidebar, { state }));
 
 			const appLayerToggleE = () => showAppLayerRef.update(b => !b);
 
@@ -45,7 +45,7 @@ const MapContainer = (): m.Component => {
 };
 
 export interface MapAttr {
-	state: IORef<State>;
+	state: IORef<SettingState>;
 	setting: SettingOption;
 }
 

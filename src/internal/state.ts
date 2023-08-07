@@ -1,8 +1,9 @@
-import { Maybe } from "purify-ts";
-import { SettingOption } from "./storage";
+import { List, Maybe } from "purify-ts";
+import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
+import { UserData } from "./codec";
 
-export interface State {
+export interface SettingState {
 	setting: Maybe<SettingOption>;
 }
 
@@ -15,7 +16,6 @@ export const loadMapScript = (token: string): Promise<void> => {
 		return Promise.resolve();
 	}
 
-
 	const script = document.createElement("script");
 	script.src = `${BASE_URL}${token}`;
 
@@ -27,4 +27,25 @@ export const loadMapScript = (token: string): Promise<void> => {
 			resolve();
 		});
 	});
+};
+
+export interface State {
+	userData: UserData;
+}
+
+export const getState = (): IORef<State> => {
+	const data = readUserData();
+	return new IORef({ userData: data });
+};
+
+export const setLayerVisibleAt = (index: number, isVisible: boolean , state: IORef<State>): void => {
+	state.updateAt("userData", s => List.at(index, s.layerList)
+		.map(layer => {
+			const layern = { ...layer, isVisible };
+			s.layerList[index] = layern;
+			return s;
+		})
+		.orDefaultLazy(() => s));
+
+	writeUserData(state.askAt("userData"));
 };
