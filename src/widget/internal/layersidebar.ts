@@ -1,7 +1,6 @@
 import * as m from "mithril";
 import { modal } from "drifloon/module/modal";
 import { AddLayerModal } from "./addlayermodal";
-import { Maybe } from "purify-ts";
 import * as State from "../../internal/state";
 import { IORef } from "drifloon/data/ref";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
@@ -52,7 +51,7 @@ const MenuItem: m.Component<MenuItemAttr> = {
 
 export const LayerSidebar = (vnode: m.Vnode<LayerSidebarAttr>): m.Component<LayerSidebarAttr> => {
 	const openAddLayerModal = async () => {
-		const r = await modal<Maybe<string>>(AddLayerModal);
+		const r = await modal(AddLayerModal);
 		r.ifJust(name => State.addLayer(name, vnode.attrs.state));
 	};
 
