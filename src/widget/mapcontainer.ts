@@ -13,7 +13,7 @@ const MapWidget: m.Component = {
 	view: () => m("div", { style: "width: 100%; height: calc(100% - 49px); "}),
 };
 
-const MapContainer = (): m.Component => {
+const MapXX = (): m.Component => {
 	const showAppLayerRef = new IORef<boolean>(false);
 	const state = getState();
 	return {
@@ -44,17 +44,17 @@ const MapContainer = (): m.Component => {
 	};
 };
 
-export interface MapAttr {
+export interface MapContainerAttr {
 	state: IORef<SettingState>;
 	setting: SettingOption;
 }
 
-export const MainMap = (vnode: m.Vnode<MapAttr>): m.Component<MapAttr> => {
+export const MapContainer = (vnode: m.Vnode<MapContainerAttr>): m.Component<MapContainerAttr> => {
 	const [update, Wait] = waitting();
 
 	update(() => EitherAsync.fromPromise(async () => {
 		await loadMapScript(vnode.attrs.setting.token);
-		return Right({ view: () => m(MapContainer) });
+		return Right({ view: () => m(MapXX) });
 	}));
 
 	return {

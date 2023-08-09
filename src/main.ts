@@ -4,7 +4,7 @@ import { readSetting } from "./internal/storage";
 import { IORef } from "drifloon/data/ref";
 import { SettingState } from "./internal/state";
 import { SettingForm } from "./widget/settingform";
-import { MainMap, MapAttr } from "./widget/map";
+import { MapContainer, MapContainerAttr } from "./widget/mapcontainer";
 
 interface RouterAttr {
 	state: IORef<SettingState>
@@ -15,7 +15,7 @@ const Router: m.Component<RouterAttr> = {
 		return attrs.state.askAt("setting")
 			.caseOf({
 				Just: setting => m.fragment({}, [
-					m<MapAttr, {}>(MainMap, { setting, state: attrs.state })
+					m<MapContainerAttr, {}>(MapContainer, { setting, state: attrs.state })
 				]),
 				Nothing: () => m.fragment({}, [
 					m(SettingForm, attrs)
