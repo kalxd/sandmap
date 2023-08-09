@@ -1,25 +1,20 @@
 import * as m from "mithril";
 import { IORef } from "drifloon/data/ref";
 import { waitting } from "drifloon/module/loading";
-import { SettingState, getState, loadMapScript } from "../internal/state";
+import { SettingState, loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
-import * as TMap from "../internal/tmap";
 import { AppMenu } from "./internal/appmenu";
 import { LayerSidebar } from "./internal/layersidebar";
-
-const MapWidget: m.Component = {
-	oncreate: vnode => TMap.init(vnode.dom),
-	view: () => m("div", { style: "width: 100%; height: calc(100% - 49px); "}),
-};
+import { MapNode } from "./widget/mapnode";
+import * as State from "../internal/state";
 
 const MapXX = (): m.Component => {
 	const showAppLayerRef = new IORef<boolean>(false);
-	const state = getState();
 	return {
 		view: () => {
 			const appLayer = showAppLayerRef.asks(Maybe.fromFalsy)
-				.map(_ => m(LayerSidebar, { state }));
+				.map(_ => m(LayerSidebar));
 
 			const appLayerToggleE = () => showAppLayerRef.update(b => !b);
 
@@ -38,7 +33,7 @@ const MapXX = (): m.Component => {
 						m(AppMenu)
 					])
 				])),
-				m(MapWidget),
+				m(MapNode, { connectFinish: State.initAppState }),
 			]);
 		}
 	};

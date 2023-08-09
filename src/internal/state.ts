@@ -1,7 +1,7 @@
-import { List, Maybe, NonEmptyList } from "purify-ts";
+import { Just, List, Maybe, Nothing } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
-import { UserData } from "./codec";
+import { LayerData, UserData } from "./codec";
 
 export interface SettingState {
 	setting: Maybe<SettingOption>;
@@ -29,49 +29,55 @@ export const loadMapScript = (token: string): Promise<void> => {
 	});
 };
 
-export interface State {
+export interface AppState {
 	userData: UserData;
+	tmap: T.Map;
 }
 
-export const getState = (): IORef<State> => {
-	const data = readUserData();
-	return new IORef({ userData: data });
+export const appState = new IORef<Maybe<AppState>>(Nothing);
+
+const syncAppState = (): void => {
+	appState.ask().ifJust(state => {
+		writeUserData(state.userData);
+	});
 };
 
-const saveState = (state: IORef<State>): void => {
-	writeUserData(state.askAt("userData"));
+export const initAppState = (tmap: T.Map): void => {
+	const userData = readUserData();
+	appState.put(Just({ userData, tmap }));
 };
 
-export const setLayerVisibleAt = (index: number, isVisible: boolean , state: IORef<State>): void => {
-	state.updateAt("userData", s => List.at(index, s.layerList)
-		.map(layer => {
-			const layern = { ...layer, isVisible };
-			s.layerList[index] = layern;
-			return s;
-		})
-		.orDefaultLazy(() => s));
+export const addLayer = (name: string): void => {
+	const newLayer: LayerData = {
+		name,
+		isVisible: true
+	};
 
-	saveState(state);
-};
-
-export const activeLayer = (index: number, state: IORef<State>): void => {
-	state.updateAt("userData", s => ({ ...s, active: index }));
-	saveState(state);
-};
-
-export const addLayer = (name: string, state: IORef<State>): void => {
-	state.updateAt("userData", s => {
-		const n = s.layerList.length
-		const layer = {
-			name,
-			isVisible: true
-		};
-		const layerList = s.layerList.concat([layer]);
-		return {
-			layerList,
-			active: n
-		};
+	appState.ask().ifJust(state => {
+		const layerList = state.userData.layerList.concat(newLayer);
+		state.userData.layerList = layerList;
+		return state;
 	});
 
-	saveState(state);
+	syncAppState();
+};
+
+export const activeLayer = (index: number): void => {
+	appState.ask().ifJust(state => {
+		state.userData.active = index;
+		return state;
+	});
+	syncAppState();
+};
+
+export const setLayerVisible = (
+	index: number,
+	isVisible: boolean
+): void => {
+	appState.ask().ifJust(state => {
+		List.at(index, state.userData.layerList)
+			.ifJust(layer => layer.isVisible = isVisible);
+		return state;
+	});
+	syncAppState();
 };

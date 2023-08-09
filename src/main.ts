@@ -3,8 +3,8 @@ import { MainLayout } from "drifloon";
 import { readSetting } from "./internal/storage";
 import { IORef } from "drifloon/data/ref";
 import { SettingState } from "./internal/state";
-import { SettingForm } from "./widget/settingform";
-import { MapContainer, MapContainerAttr } from "./widget/mapcontainer";
+import { SettingForm } from "./component/settingform";
+import { MapContainer, MapContainerAttr } from "./component/mapcontainer";
 
 interface RouterAttr {
 	state: IORef<SettingState>
