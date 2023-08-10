@@ -15,7 +15,7 @@ const Router: m.Component<RouterAttr> = {
 		return attrs.state.askAt("setting")
 			.caseOf({
 				Just: setting => m.fragment({}, [
-					m<MapContainerAttr, {}>(MapContainer, { setting, state: attrs.state })
+					m<MapContainerAttr, {}>(MapContainer, { setting })
 				]),
 				Nothing: () => m.fragment({}, [
 					m(SettingForm, attrs)

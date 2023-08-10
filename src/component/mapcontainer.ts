@@ -1,7 +1,7 @@
 import * as m from "mithril";
 import { IORef } from "drifloon/data/ref";
 import { waitting } from "drifloon/module/loading";
-import { SettingState, loadMapScript } from "../internal/state";
+import { loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
 import { AppMenu } from "./internal/appmenu";
@@ -40,7 +40,6 @@ const MapXX = (): m.Component => {
 };
 
 export interface MapContainerAttr {
-	state: IORef<SettingState>;
 	setting: SettingOption;
 }
 
