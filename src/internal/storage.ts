@@ -54,7 +54,8 @@ const USER_DATA_KEY = "user_data";
 
 const layerDef: LayerData = Object.freeze({
 	name: "默认",
-	isVisible: true
+	isVisible: true,
+	itemList: []
 });
 
 export const readUserData = (): UserData => {

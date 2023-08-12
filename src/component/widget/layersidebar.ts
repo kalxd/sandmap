@@ -53,7 +53,6 @@ export const LayerSidebar = (): m.Component => {
 	return {
 		view: () => {
 			const layerList = State.appState.ask()
-				.map(state => state.userData)
 				.map(({ active, layerList }) => layerList.map((layer, i) => {
 					const isActive = active === i;
 					return m<MenuItemAttr, {}>(MenuItem, {

@@ -1,7 +1,7 @@
-import { Just, List, Maybe, Nothing } from "purify-ts";
+import { Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
-import { LayerData, UserData } from "./codec";
+import { Polyline, UserData } from "./codec";
 
 export interface SettingState {
 	setting: Maybe<SettingOption>;
@@ -29,33 +29,89 @@ export const loadMapScript = (token: string): Promise<void> => {
 	});
 };
 
+interface PolylineToolItem extends Polyline {
+	instance: T.PolylineTool;
+}
+
+interface AppLayer {
+	name: string;
+	isVisible: boolean;
+	itemList: Array<PolylineToolItem>;
+}
+
 export interface AppState {
-	userData: UserData;
+	active: number;
+	layerList: NonEmptyList<AppLayer>;
 	tmap: T.Map;
 }
 
 export const appState = new IORef<Maybe<AppState>>(Nothing);
 
-const syncAppState = (): void => {
-	appState.ask().ifJust(state => {
-		writeUserData(state.userData);
+const appStateIntoUserData = (state: AppState): UserData => {
+	const layerList = state.layerList.map(layer => {
+		const itemList = layer.itemList.map(item => ({
+			type: item.type,
+			color: item.color,
+			lineList: item.lineList
+		}));
+		return {
+			name: layer.name,
+			isVisible: layer.isVisible,
+			itemList
+		};
 	});
+
+	return {
+		active: state.active,
+		layerList
+	};
+};
+
+const userDataIntoAppState = (tmap: T.Map, data: UserData): AppState => {
+	const layerList = data.layerList.map(layer => {
+		const itemList = layer.itemList.map(item => {
+			const tool = new T.PolylineTool(tmap);
+			return {
+				...item,
+				instance: tool
+			};
+		});
+
+		return {
+			...layer,
+			itemList
+		};
+	});
+
+	return {
+		active: data.active,
+		layerList,
+		tmap
+	};
+};
+
+const syncAppState = (): void => {
+	appState.ask()
+		.map(appStateIntoUserData)
+		.ifJust(writeUserData);
 };
 
 export const initAppState = (tmap: T.Map): void => {
 	const userData = readUserData();
-	appState.put(Just({ userData, tmap }));
+	const state = userDataIntoAppState(tmap, userData);
+	appState.put(Just(state));
 };
 
 export const addLayer = (name: string): void => {
-	const newLayer: LayerData = {
+	const newLayer: AppLayer = {
 		name,
-		isVisible: true
+		isVisible: true,
+		itemList: []
 	};
 
 	appState.ask().ifJust(state => {
-		const layerList = state.userData.layerList.concat(newLayer);
-		state.userData.layerList = layerList;
+		const layerList = state.layerList.concat(newLayer);
+		state.layerList = layerList;
 		return state;
 	});
 
@@ -64,7 +120,7 @@ export const addLayer = (name: string): void => {
 
 export const activeLayer = (index: number): void => {
 	appState.ask().ifJust(state => {
-		state.userData.active = index;
+		state.active = index;
 		return state;
 	});
 	syncAppState();
@@ -75,7 +131,7 @@ export const setLayerVisible = (
 	isVisible: boolean
 ): void => {
 	appState.ask().ifJust(state => {
-		List.at(index, state.userData.layerList)
+		List.at(index, state.layerList)
 			.ifJust(layer => layer.isVisible = isVisible);
 		return state;
 	});

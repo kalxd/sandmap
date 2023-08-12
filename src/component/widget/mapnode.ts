@@ -7,8 +7,11 @@ export interface MapNodeAttr {
 	connectFinish: (tmap: T.Map) => void;
 }
 
-const openModal = () => {
-	modal(LineModal).then(console.log);
+const openModal = async (tmap: T.Map) => {
+	await modal(LineModal);
+	const tool = new T.PolylineTool(tmap);
+	tool.addEventListener("draw", console.log);
+	tool.open();
 };
 
 export const MapNode: m.Component<MapNodeAttr> = {
@@ -16,7 +19,7 @@ export const MapNode: m.Component<MapNodeAttr> = {
 		const tmap = TMap.init(vnode.dom);
 
 		const menu = new T.ContextMenu({});
-		const menuItem = new T.MenuItem("添加线段", openModal);
+		const menuItem = new T.MenuItem("添加线段", () => openModal(tmap));
 		menu.addItem(menuItem);
 		tmap.addContextMenu(menu);
 

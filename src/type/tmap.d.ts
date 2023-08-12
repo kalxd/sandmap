@@ -49,20 +49,20 @@ declare module T {
 	class Map {
 		constructor(dom: Element);
 
-		centerAndZoom(lgnlat: LngLat, zoom: number): void;
-		getZoom(): number;
-		getCenter(): LngLat;
-		addControl<T extends Control>(control: T): void;
-		addContextMenu(menu: ContextMenu): void;
+		centerAndZoom(lgnlat: LngLat, zoom: number): void
+		getZoom(): number
+		getCenter(): LngLat
+		addControl<T extends Control>(control: T): void
+		addContextMenu(menu: ContextMenu): void
 
 		addEventListener<Name extends MapBlankEventName>(
 			eventName: Name,
 			cb: (event: MapBlankEvent<Name>) => void
-		): void;
+		): void
 		removeEventListener<Name extends MapBlankEventName>(
 			eventName: Name,
 			cb: (event: MapBlankEvent<Name>) => void
-		): void;
+		): void
 	}
 
 	class MenuItem {
@@ -77,5 +77,25 @@ declare module T {
 		constructor(option: ContextMapOption)
 
 		addItem(item: MenuItem): void
+	}
+
+	interface PolylineToolOption {
+		color?: string;
+		weight?: number;
+		opacity?: number;
+		showLabel?: boolean;
+	}
+
+	type PolylineEventName = "draw";
+
+	class PolylineTool {
+		constructor(map: Map, option?: PolylineToolOption)
+
+		open(): void
+
+		addEventListener<Name extends PolylineEventName>(
+			eventName: Name,
+			callback: (target: object) => void
+		): void
 	}
 }
