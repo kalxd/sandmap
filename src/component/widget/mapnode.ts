@@ -2,6 +2,9 @@ import * as m from "mithril";
 import * as TMap from "../../internal/tmap";
 import { LineModal } from "../modal/linemodal";
 import { modal } from "drifloon/module/modal";
+import * as State from "../../internal/state";
+import { NonEmptyList } from "purify-ts";
+import { Polyline } from "../../internal/codec";
 
 export interface MapNodeAttr {
 	connectFinish: (tmap: T.Map) => void;
@@ -10,7 +13,18 @@ export interface MapNodeAttr {
 const openModal = async (tmap: T.Map) => {
 	await modal(LineModal);
 	const tool = new T.PolylineTool(tmap);
-	tool.addEventListener("draw", console.log);
+	tool.addEventListener("draw", target => {
+		NonEmptyList.fromArray(target.currentLnglats)
+			.map(lnglatList => {
+				const item: Polyline = {
+					type: "polyline",
+					color: "",
+					lineList: lnglatList,
+				};
+				return item;
+			})
+			.ifJust(State.addPolyline);
+	});
 	tool.open();
 };
 

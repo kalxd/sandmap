@@ -17,8 +17,8 @@ declare module T {
 		getLat(): number;
 	}
 
-	class Control {
-	}
+	class Control {}
+	class OverLayer {}
 
 	module Control {
 		interface ZoomOption {
@@ -40,6 +40,16 @@ declare module T {
 		class MapType extends Control {}
 	}
 
+	interface PolylineOption {
+		color?: string;
+		weight?: number;
+		opacity?: number;
+	}
+
+	class Polyline {
+		constructor(points: Array<LngLat>, option?: PolylineOption)
+	}
+
 	type MapBlankEventName = "zoomend" | "moveend";
 	type MapBlankEvent<T extends string> = {
 		type: T;
@@ -53,6 +63,8 @@ declare module T {
 		getZoom(): number
 		getCenter(): LngLat
 		addControl<T extends Control>(control: T): void
+		addOverLay<T extends OverLayer>(overlayer: T): void
+		removeOverLay<T extends OverLayer>(overlayer: T): void
 		addContextMenu(menu: ContextMenu): void
 
 		addEventListener<Name extends MapBlankEventName>(
@@ -87,15 +99,20 @@ declare module T {
 	}
 
 	type PolylineEventName = "draw";
+	interface PolylineDraw {
+		target: Map;
+		currentLnglats: Array<LngLat>;
+	}
 
 	class PolylineTool {
 		constructor(map: Map, option?: PolylineToolOption)
 
 		open(): void
+		clear(): void
 
 		addEventListener<Name extends PolylineEventName>(
 			eventName: Name,
-			callback: (target: object) => void
+			callback: (target: PolylineDraw) => void
 		): void
 	}
 }

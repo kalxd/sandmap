@@ -29,8 +29,8 @@ export const loadMapScript = (token: string): Promise<void> => {
 	});
 };
 
-interface PolylineToolItem extends Polyline {
-	instance: T.PolylineTool;
+export interface PolylineToolItem extends Polyline {
+	instance: T.Polyline;
 }
 
 interface AppLayer {
@@ -70,7 +70,12 @@ const appStateIntoUserData = (state: AppState): UserData => {
 const userDataIntoAppState = (tmap: T.Map, data: UserData): AppState => {
 	const layerList = data.layerList.map(layer => {
 		const itemList = layer.itemList.map(item => {
-			const tool = new T.PolylineTool(tmap);
+			const tool = new T.Polyline(item.lineList);
+
+			if (layer.isVisible) {
+				tmap.addOverLay(tool);
+			}
+
 			return {
 				...item,
 				instance: tool
@@ -90,8 +95,25 @@ const userDataIntoAppState = (tmap: T.Map, data: UserData): AppState => {
 	};
 };
 
+const syncLayerItemVisible = (state: AppState): void => {
+	const { tmap } = state;
+	state.layerList.forEach(layer => {
+		if (layer.isVisible) {
+			layer.itemList.forEach(item => {
+				tmap.addOverLay(item.instance);
+			});
+		}
+		else {
+			layer.itemList.forEach(item => {
+				tmap.removeOverLay(item.instance);
+			});
+		}
+	});
+}
+
 const syncAppState = (): void => {
 	appState.ask()
+		.ifJust(syncLayerItemVisible)
 		.map(appStateIntoUserData)
 		.ifJust(writeUserData);
 };
@@ -134,6 +156,21 @@ export const setLayerVisible = (
 		List.at(index, state.layerList)
 			.ifJust(layer => layer.isVisible = isVisible);
 		return state;
+	});
+	syncAppState();
+};
+
+export const addPolyline = (item: Polyline): void => {
+	appState.ask().ifJust(state => {
+		List.at(state.active, state.layerList)
+			.ifJust(layer => {
+				const instance = new T.Polyline(item.lineList);
+				layer.itemList = layer.itemList.concat({
+					...item,
+					instance
+				});
+				return layer;
+			});
 	});
 	syncAppState();
 };
