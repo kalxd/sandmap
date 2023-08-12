@@ -1,6 +1,6 @@
 import * as m from "mithril";
 import { modal } from "drifloon/module/modal";
-import { AddLayerModal } from "./addlayermodal";
+import { AddLayerModal } from "../modal/addlayermodal";
 import * as State from "../../internal/state";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
 import { LayerData } from "../../internal/codec";

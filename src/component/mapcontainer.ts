@@ -4,8 +4,8 @@ import { waitting } from "drifloon/module/loading";
 import { loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
-import { AppMenu } from "./internal/appmenu";
-import { LayerSidebar } from "./internal/layersidebar";
+import { AppMenu } from "./widget/appmenu";
+import { LayerSidebar } from "./widget/layersidebar";
 import { MapNode } from "./widget/mapnode";
 import * as State from "../internal/state";
 

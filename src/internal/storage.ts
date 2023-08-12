@@ -3,8 +3,7 @@ import {
 	Codec,
 	GetType,
 	Maybe,
-    NonEmptyList,
-    Just
+    NonEmptyList
 } from "purify-ts";
 import { LayerData, TMapLastData, UserData, tmapLastStateCodec, userDataCodec } from "./codec";
 

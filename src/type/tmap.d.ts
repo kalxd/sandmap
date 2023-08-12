@@ -4,7 +4,6 @@ declare const T_ANCHOR_TOP_LEFT = "topleft";
 declare const T_ANCHOR_TOP_RIGHT = "topright";
 
 declare module T {
-
 	type ANCHOR_POSITION = typeof T_ANCHOR_BOTTOM_LEFT
 		| typeof T_ANCHOR_BOTTOM_RIGHT
 		| typeof T_ANCHOR_TOP_LEFT
@@ -54,6 +53,7 @@ declare module T {
 		getZoom(): number;
 		getCenter(): LngLat;
 		addControl<T extends Control>(control: T): void;
+		addContextMenu(menu: ContextMenu): void;
 
 		addEventListener<Name extends MapBlankEventName>(
 			eventName: Name,
@@ -63,5 +63,19 @@ declare module T {
 			eventName: Name,
 			cb: (event: MapBlankEvent<Name>) => void
 		): void;
+	}
+
+	class MenuItem {
+		constructor(text: string, callback: () => void)
+	}
+
+	interface ContextMapOption {
+		width?: number;
+	}
+
+	class ContextMenu {
+		constructor(option: ContextMapOption)
+
+		addItem(item: MenuItem): void
 	}
 }

@@ -24,7 +24,6 @@ const Router: m.Component<RouterAttr> = {
 	}
 };
 
-
 const App = (): m.Component => {
 	const setting = readSetting();
 
