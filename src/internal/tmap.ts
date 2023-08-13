@@ -1,4 +1,4 @@
-import { Polyline } from "./codec";
+import { Polygon, Polyline } from "./codec";
 import { readLastLngLat, writeLastLngLat } from "./storage";
 
 export const init = (el: Element): T.Map => {
@@ -35,3 +35,10 @@ export const init = (el: Element): T.Map => {
 
 export const initPolyline = (item: Polyline): T.Polyline =>
 	new T.Polyline(item.lineList, { color: item.color });
+
+export const initPolygon = (item: Polygon): T.Polygon =>
+	new T.Polygon(item.pointList, {
+		color: item.color,
+		fillColor: item.color,
+		fillOpacity: 0.2,
+	})

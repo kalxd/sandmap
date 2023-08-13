@@ -46,8 +46,18 @@ declare module T {
 		opacity?: number;
 	}
 
-	class Polyline {
+	class Polyline extends OverLayer {
 		constructor(points: Array<LngLat>, option?: PolylineOption)
+	}
+
+	interface PolygonOption {
+		color?: string;
+		fillColor?: string;
+		fillOpacity?: number;
+	}
+
+	class Polygon extends OverLayer {
+		constructor(points: Array<LngLat>, option?: PolygonOption)
 	}
 
 	type MapBlankEventName = "zoomend" | "moveend";
@@ -125,14 +135,14 @@ declare module T {
 	}
 
 	class PolygonTool {
-		constructor(map: Map, option?: PolygonTool)
+		constructor(map: Map, option?: PolygonToolOption)
 
 		open(): void
 		clear(): void
 
-		addEvenListener<Name extends PolygonEventName>(
+		addEventListener<Name extends PolygonEventName>(
 			eventName: Name,
-			callback: (target: object) => void
+			callback: (target: PolylineDraw) => void
 		): void
 	}
 }

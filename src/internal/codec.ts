@@ -9,6 +9,7 @@ import {
     Right,
     Left,
     NonEmptyList,
+	oneOf,
 } from "purify-ts";
 
 const lnglatI = Codec.interface({
@@ -63,12 +64,45 @@ export const polylineCodec = Codec.custom<Polyline>({
 	encode: polylineI.encode
 });
 
-export type MapToolItem = Polyline;
+const polygonI = Codec.interface({
+	type: cstring,
+	color: cstring,
+	pointList: nonEmptyList(lnglatCodec)
+});
+
+export interface Polygon {
+	type: "polygon",
+	color: string,
+	pointList: NonEmptyList<T.LngLat>
+}
+
+export const polygonCodec = Codec.custom<Polygon>({
+	decode: input => polygonI.decode(input)
+		.chain(p => {
+			if (p.type === "polygon") {
+				return Right({
+					...p,
+					type: "polygon"
+				});
+			}
+			else {
+				return Left(`未知地图类型${p.type}`)
+			}
+		}),
+	encode: polygonI.encode
+});
+
+const itemType = oneOf([
+	polylineCodec,
+	polygonCodec
+])
+
+export type ItemType = GetType<typeof itemType>;
 
 export const layerDataCodec = Codec.interface({
 	name: cstring,
 	isVisible: cboolean,
-	itemList: carray(polylineCodec)
+	itemList: carray(itemType)
 });
 
 export type LayerData = GetType<typeof layerDataCodec>;

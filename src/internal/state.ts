@@ -1,7 +1,7 @@
 import { Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
-import { Polyline, UserData } from "./codec";
+import { ItemType, Polygon, Polyline, UserData } from "./codec";
 import * as TMap from "./tmap";
 
 export interface SettingState {
@@ -34,10 +34,44 @@ export interface PolylineToolItem extends Polyline {
 	instance: T.Polyline;
 }
 
+export interface PolygonToolItem extends Polygon {
+	instance: T.Polygon;
+}
+
+type ToolItem = PolylineToolItem | PolygonToolItem;
+
+interface ToolItemCaseFunction<R> {
+	polyline: (item: PolylineToolItem) => R;
+	polygon: (item: PolygonToolItem) => R;
+}
+
+export const caseToolItem = <R>(item: ToolItem, f: ToolItemCaseFunction<R>): R => {
+	if (item.type === "polyline") {
+		return f.polyline(item);
+	}
+	else {
+		return f.polygon(item);
+	}
+};
+
+interface ItemTypeCaseFunction<R> {
+	polyline: (item: Polyline) => R;
+	polygon: (item: Polygon) => R;
+}
+
+const caseItemType = <R>(item: ItemType, f: ItemTypeCaseFunction<R>): R => {
+	if (item.type === "polyline") {
+		return f.polyline(item);
+	}
+	else {
+		return f.polygon(item);
+	}
+};
+
 interface AppLayer {
 	name: string;
 	isVisible: boolean;
-	itemList: Array<PolylineToolItem>;
+	itemList: Array<ToolItem>;
 }
 
 export interface AppState {
@@ -50,10 +84,17 @@ export const appState = new IORef<Maybe<AppState>>(Nothing);
 
 const appStateIntoUserData = (state: AppState): UserData => {
 	const layerList = state.layerList.map(layer => {
-		const itemList = layer.itemList.map(item => ({
-			type: item.type,
-			color: item.color,
-			lineList: item.lineList
+		const itemList = layer.itemList.map(item => caseToolItem<ItemType>(item, {
+			polyline: item => ({
+				type: item.type,
+				color: item.color,
+				lineList: item.lineList
+			}),
+			polygon: item => ({
+				type: item.type,
+				color: item.color,
+				pointList: item.pointList
+			})
 		}));
 		return {
 			name: layer.name,
@@ -71,16 +112,28 @@ const appStateIntoUserData = (state: AppState): UserData => {
 const userDataIntoAppState = (tmap: T.Map, data: UserData): AppState => {
 	const layerList = data.layerList.map(layer => {
 		const itemList = layer.itemList.map(item => {
-			const tool = TMap.initPolyline(item);
+			const toolitem = caseItemType<ToolItem>(item, {
+				polyline: item => {
+					const tool = TMap.initPolyline(item);
+					return {
+						...item,
+						instance: tool
+					};
+				},
+				polygon: item => {
+					const tool = TMap.initPolygon(item);
+					return {
+						...item,
+						instance: tool
+					};
+				}
+			});
 
 			if (layer.isVisible) {
-				tmap.addOverLay(tool);
+				tmap.addOverLay(toolitem.instance);
 			}
 
-			return {
-				...item,
-				instance: tool
-			};
+			return toolitem;
 		});
 
 		return {
@@ -162,16 +215,29 @@ export const setLayerVisible = (
 };
 
 export const addPolyline = (item: Polyline): void => {
-	appState.ask().ifJust(state => {
-		List.at(state.active, state.layerList)
-			.ifJust(layer => {
-				const instance = TMap.initPolyline(item);
-				layer.itemList = layer.itemList.concat({
-					...item,
-					instance
-				});
-				return layer;
+	appState.ask()
+		.chain(state => List.at(state.active, state.layerList))
+		.ifJust(layer => {
+			const instance = TMap.initPolyline(item);
+			layer.itemList = layer.itemList.concat({
+				...item,
+				instance
 			});
-	});
+			return layer;
+		});
+	syncAppState();
+};
+
+export const addPolygon = (item: Polygon): void => {
+	appState.ask()
+		.chain(state => List.at(state.active, state.layerList))
+		.ifJust(layer => {
+			const instance = TMap.initPolygon(item);
+			layer.itemList = layer.itemList.concat({
+				...item,
+				instance
+			});
+			return layer;
+		});
 	syncAppState();
 };

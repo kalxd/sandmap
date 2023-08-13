@@ -5,7 +5,7 @@ import { PolygonModal } from "../modal/polygonmodal";
 import { modal } from "drifloon/module/modal";
 import * as State from "../../internal/state";
 import { NonEmptyList } from "purify-ts";
-import { Polyline } from "../../internal/codec";
+import { Polygon, Polyline } from "../../internal/codec";
 
 export interface MapNodeAttr {
 	connectFinish: (tmap: T.Map) => void;
@@ -34,7 +34,20 @@ const openLineModal = async (tmap: T.Map) => {
 
 const openPolygonModal = async (tmap: T.Map) => {
 	const r = await modal(PolygonModal);
-	r.ifJust(console.log);
+	r.ifJust(color => {
+		const tool = new T.PolygonTool(tmap, { color, fillColor: color });
+		tool.addEventListener("draw", target => {
+			NonEmptyList.fromArray(target.currentLnglats)
+				.map<Polygon>(pointList => ({
+					type: "polygon",
+					color,
+					pointList
+				}))
+				.ifJust(State.addPolygon)
+			tool.clear();
+		});
+		tool.open();
+	});
 }
 
 export const MapNode: m.Component<MapNodeAttr> = {
