@@ -6,7 +6,7 @@ const config = {
 		main: "./src/main.ts"
 	},
 	output: {
-		path: path.resolve("./dist")
+		path: path.resolve("./static/dist")
 	},
 	module: {
 		rules: [
