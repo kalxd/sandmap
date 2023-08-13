@@ -10,22 +10,25 @@ export interface MapNodeAttr {
 	connectFinish: (tmap: T.Map) => void;
 }
 
-const openModal = async (tmap: T.Map) => {
-	await modal(LineModal);
-	const tool = new T.PolylineTool(tmap);
-	tool.addEventListener("draw", target => {
-		NonEmptyList.fromArray(target.currentLnglats)
-			.map(lnglatList => {
-				const item: Polyline = {
-					type: "polyline",
-					color: "",
-					lineList: lnglatList,
-				};
-				return item;
-			})
-			.ifJust(State.addPolyline);
+const openLineModal = async (tmap: T.Map) => {
+	const r = await modal(LineModal);
+	r.ifJust(color => {
+		const tool = new T.PolylineTool(tmap, { color });
+		tool.addEventListener("draw", target => {
+			NonEmptyList.fromArray(target.currentLnglats)
+				.map(lnglatList => {
+					const item: Polyline = {
+						type: "polyline",
+						color,
+						lineList: lnglatList,
+					};
+					return item;
+				})
+				.ifJust(State.addPolyline);
+			tool.clear();
+		});
+		tool.open();
 	});
-	tool.open();
 };
 
 export const MapNode: m.Component<MapNodeAttr> = {
@@ -33,7 +36,7 @@ export const MapNode: m.Component<MapNodeAttr> = {
 		const tmap = TMap.init(vnode.dom);
 
 		const menu = new T.ContextMenu({});
-		const menuItem = new T.MenuItem("添加线段", () => openModal(tmap));
+		const menuItem = new T.MenuItem("添加线段", () => openLineModal(tmap));
 		menu.addItem(menuItem);
 		tmap.addContextMenu(menu);
 

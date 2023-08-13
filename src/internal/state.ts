@@ -2,6 +2,7 @@ import { Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
 import { Polyline, UserData } from "./codec";
+import * as TMap from "./tmap";
 
 export interface SettingState {
 	setting: Maybe<SettingOption>;
@@ -70,7 +71,7 @@ const appStateIntoUserData = (state: AppState): UserData => {
 const userDataIntoAppState = (tmap: T.Map, data: UserData): AppState => {
 	const layerList = data.layerList.map(layer => {
 		const itemList = layer.itemList.map(item => {
-			const tool = new T.Polyline(item.lineList);
+			const tool = TMap.initPolyline(item);
 
 			if (layer.isVisible) {
 				tmap.addOverLay(tool);
@@ -164,7 +165,7 @@ export const addPolyline = (item: Polyline): void => {
 	appState.ask().ifJust(state => {
 		List.at(state.active, state.layerList)
 			.ifJust(layer => {
-				const instance = new T.Polyline(item.lineList);
+				const instance = TMap.initPolyline(item);
 				layer.itemList = layer.itemList.concat({
 					...item,
 					instance

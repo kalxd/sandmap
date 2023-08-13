@@ -5,15 +5,16 @@ import { PlainInput } from "drifloon/element/input";
 import { Modal, ModalAction, ModalActionAttr } from "drifloon/widget/modal";
 import { ResolveModalAttr } from "drifloon/module/modal";
 import { IORef } from "drifloon/data/ref";
+import { Just, Maybe, Nothing } from "purify-ts";
 
-export const LineModal = (): m.Component<ResolveModalAttr<string>> => {
-	const color = new IORef<string>("#ff0000");
+export const LineModal = (): m.Component<ResolveModalAttr<Maybe<string>>> => {
+	const color = new IORef<string>("#0000ff");
 
 	return {
 		view: ({ attrs }) => {
 			const actionAttr: ModalActionAttr = {
-				connectPositive: () => color.asks(attrs.connectResolve),
-				connectNegative: () => color.asks(attrs.connectResolve)
+				connectPositive: () => attrs.connectResolve(color.asks(Just)),
+				connectNegative: () => attrs.connectResolve(Nothing)
 			};
 
 			return m(Modal, attrs, [

@@ -1,3 +1,4 @@
+import { Polyline } from "./codec";
 import { readLastLngLat, writeLastLngLat } from "./storage";
 
 export const init = (el: Element): T.Map => {
@@ -31,3 +32,6 @@ export const init = (el: Element): T.Map => {
 
 	return v;
 };
+
+export const initPolyline = (item: Polyline): T.Polyline =>
+	new T.Polyline(item.lineList, { color: item.color });
