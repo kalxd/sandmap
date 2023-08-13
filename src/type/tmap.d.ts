@@ -115,4 +115,24 @@ declare module T {
 			callback: (target: PolylineDraw) => void
 		): void
 	}
+
+	type PolygonEventName = "draw";
+
+	interface PolygonToolOption {
+		color?: string;
+		fillColor?: string;
+		fillOpacity?: number;
+	}
+
+	class PolygonTool {
+		constructor(map: Map, option?: PolygonTool)
+
+		open(): void
+		clear(): void
+
+		addEvenListener<Name extends PolygonEventName>(
+			eventName: Name,
+			callback: (target: object) => void
+		): void
+	}
 }
