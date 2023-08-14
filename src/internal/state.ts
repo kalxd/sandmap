@@ -4,6 +4,14 @@ import { IORef } from "drifloon/data/ref";
 import { ItemType, Polygon, Polyline, UserData } from "./codec";
 import * as TMap from "./tmap";
 
+const takeAt = <T>(xs: Array<T>, index: number): Maybe<[T, Array<T>]> => {
+	const item = List.find((_, i) => i === index, xs);
+	return item.map(item => {
+		const ys = xs.filter((_, i) => i !== index);
+		return [item, ys];
+	});
+};
+
 export interface SettingState {
 	setting: Maybe<SettingOption>;
 }
@@ -238,6 +246,22 @@ export const addPolygon = (item: Polygon): void => {
 				instance
 			});
 			return layer;
+		});
+	syncAppState();
+};
+
+export const removeToolAt = (layerIndex: number, itemIndex: number): void => {
+	appState.ask()
+		.ifJust(state => {
+			const { tmap } = state;
+			List.at(layerIndex, state.layerList)
+				.ifJust(layer => {
+					takeAt(layer.itemList, itemIndex)
+						.ifJust(([item, itemList]) => {
+							tmap.removeOverLay(item.instance);
+							layer.itemList = itemList;
+						});
+				});
 		});
 	syncAppState();
 };

@@ -7,6 +7,7 @@ import { Maybe } from "purify-ts";
 
 interface LayerItemAttr {
 	isActive: boolean;
+	index: number;
 	layer: State.AppLayer;
 	connectLayerClick: () => void;
 	connectToggleVisible: (isVisible: boolean) => void;
@@ -39,10 +40,10 @@ const LayerItem: m.Component<LayerItemAttr> = {
 
 		const toolList = Maybe.fromFalsy(attrs.isActive)
 			.map(_ => attrs.layer.itemList)
-			.map(itemList => itemList.map(item => m(
+			.map(itemList => itemList.map((item, i) => m(
 				"div.menu", m("div.item", [
 					item.color,
-					m("i.icon.delete")
+					m("i.icon.delete", { onclick: () => State.removeToolAt(attrs.index, i) })
 				]))
 			));
 
@@ -69,6 +70,7 @@ export const LayerSidebar: m.Component = {
 				return m<LayerItemAttr, {}>(LayerItem, {
 					layer,
 					isActive,
+					index: i,
 					connectToggleVisible: b => State.setLayerVisible(i, b),
 					connectLayerClick: () => State.activeLayer(i)
 				});
