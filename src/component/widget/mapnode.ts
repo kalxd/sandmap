@@ -27,6 +27,7 @@ const openLineModal = async (tmap: T.Map) => {
 				})
 				.ifJust(State.addPolyline);
 			tool.clear();
+			m.redraw();
 		});
 		tool.open();
 	});
@@ -45,6 +46,7 @@ const openPolygonModal = async (tmap: T.Map) => {
 				}))
 				.ifJust(State.addPolygon)
 			tool.clear();
+			m.redraw();
 		});
 		tool.open();
 	});
