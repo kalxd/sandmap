@@ -1,4 +1,4 @@
-import { Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
+import { Either, Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
 import { SettingOption, readUserData, writeUserData } from "./storage";
 import { IORef } from "drifloon/data/ref";
 import { ItemType, Polygon, Polyline, UserData } from "./codec";
@@ -264,4 +264,26 @@ export const removeToolAt = (layerIndex: number, itemIndex: number): void => {
 				});
 		});
 	syncAppState();
+};
+
+export const removeCurrentLayer = (): Either<string, void> => {
+	return appState.ask()
+		.filter(state => state.layerList.length > 1)
+		.map(state => {
+			const { tmap, active } = state;
+			takeAt(state.layerList, active)
+				.ifJust(([layer, layerList]) => {
+					if (layer.isVisible) {
+						layer.itemList.forEach(item => {
+							tmap.removeOverLay(item.instance);
+						});
+					}
+
+					state.layerList = NonEmptyList.unsafeCoerce(layerList);
+					state.active -= 1;
+
+					syncAppState();
+				});
+		})
+		.toEither("无法删除（最后）图层");
 };

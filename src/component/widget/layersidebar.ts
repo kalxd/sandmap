@@ -1,5 +1,5 @@
 import * as m from "mithril";
-import { modal } from "drifloon/module/modal";
+import { modal, confirmText, alertText } from "drifloon/module/modal";
 import { AddLayerModal } from "../modal/addlayermodal";
 import * as State from "../../internal/state";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
@@ -62,6 +62,13 @@ const openAddLayerModal = async () => {
 	r.ifJust(State.addLayer);
 };
 
+const removeLayer = async () => {
+	const r = await confirmText("确认删除当前图层？")
+	r.ifJust(() => {
+		State.removeCurrentLayer().ifLeft(alertText);
+	});
+};
+
 export const LayerSidebar: m.Component = {
 	view: () => {
 		const layerList = State.appState.ask()
@@ -86,8 +93,8 @@ export const LayerSidebar: m.Component = {
 				m("div.item", [
 					m("div.ui.basic.fitted.center.aligned.segment", [
 						m("div.ui.tiny.buttons", [
-							m("button.ui.secondary.button", { onclick: openAddLayerModal }, "删除图层"),
-							m("button.ui.primary.button", "添加图层"),
+							m("button.ui.secondary.button", { onclick: removeLayer } , "删除图层"),
+							m("button.ui.primary.button", { onclick: openAddLayerModal }, "添加图层"),
 						]),
 					])
 				])
