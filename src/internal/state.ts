@@ -68,7 +68,7 @@ const caseItemType = <R>(item: ItemType, f: ItemTypeCaseFunction<R>): R => {
 	}
 };
 
-interface AppLayer {
+export interface AppLayer {
 	name: string;
 	isVisible: boolean;
 	itemList: Array<ToolItem>;

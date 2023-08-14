@@ -3,16 +3,16 @@ import { modal } from "drifloon/module/modal";
 import { AddLayerModal } from "../modal/addlayermodal";
 import * as State from "../../internal/state";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
-import { LayerData } from "../../internal/codec";
+import { Maybe } from "purify-ts";
 
-interface MenuItemAttr {
+interface LayerItemAttr {
 	isActive: boolean;
-	layer: LayerData;
+	layer: State.AppLayer;
 	connectLayerClick: () => void;
 	connectToggleVisible: (isVisible: boolean) => void;
 }
 
-const MenuItem: m.Component<MenuItemAttr> = {
+const LayerItem: m.Component<LayerItemAttr> = {
 	view: ({ attrs }) => {
 		const klass = pickKlass([
 			selectKlass("active", attrs.isActive)
@@ -37,49 +37,59 @@ const MenuItem: m.Component<MenuItemAttr> = {
 			}
 		})(attrs.layer.isVisible);
 
-		return m("div.blue.item", { class: klass, onclick: attrs.connectLayerClick }, [
-			attrs.layer.name,
-			icon
+		const toolList = Maybe.fromFalsy(attrs.isActive)
+			.map(_ => attrs.layer.itemList)
+			.map(itemList => itemList.map(item => m(
+				"div.menu", m("div.item", [
+					item.color,
+					m("i.icon.delete")
+				]))
+			));
+
+		return m.fragment({}, [
+			m("div.blue.item", { class: klass, onclick: attrs.connectLayerClick }, [
+				attrs.layer.name,
+				icon
+			]),
+			toolList.extract()
 		]);
 	}
 };
 
-export const LayerSidebar = (): m.Component => {
-	const openAddLayerModal = async () => {
-		const r = await modal(AddLayerModal);
-		r.ifJust(State.addLayer);
-	};
+const openAddLayerModal = async () => {
+	const r = await modal(AddLayerModal);
+	r.ifJust(State.addLayer);
+};
 
-	return {
-		view: () => {
-			const layerList = State.appState.ask()
-				.map(({ active, layerList }) => layerList.map((layer, i) => {
-					const isActive = active === i;
-					return m<MenuItemAttr, {}>(MenuItem, {
-						layer,
-						isActive,
-						connectToggleVisible: b => State.setLayerVisible(i, b),
-						connectLayerClick: () => State.activeLayer(i)
-					});
-				}))
-				.extract();
+export const LayerSidebar: m.Component = {
+	view: () => {
+		const layerList = State.appState.ask()
+			.map(({ active, layerList }) => layerList.map((layer, i) => {
+				const isActive = active === i;
+				return m<LayerItemAttr, {}>(LayerItem, {
+					layer,
+					isActive,
+					connectToggleVisible: b => State.setLayerVisible(i, b),
+					connectLayerClick: () => State.activeLayer(i)
+				});
+			}))
+			.extract();
 
-			return m(
-				"div.ui.left.fixed.vertical.menu",
-				{ style: "z-index: 10000; top: 49px;" },
-				[
-					...(layerList ?? []),
-					m("div.divider"),
-					m("div.item", [
-						m("div.ui.basic.fitted.center.aligned.segment", [
-							m("button.ui.icon.labeled.small.primary.button", { onclick: openAddLayerModal }, [
-								m("i.icon.plus"),
-								"添加新图层"
-							])
-						])
+		return m(
+			"div.ui.left.fixed.vertical.menu",
+			{ style: "z-index: 10000; top: 49px;" },
+			[
+				...(layerList ?? []),
+				m("div.divider"),
+				m("div.item", [
+					m("div.ui.basic.fitted.center.aligned.segment", [
+						m("div.ui.tiny.buttons", [
+							m("button.ui.secondary.button", { onclick: openAddLayerModal }, "删除图层"),
+							m("button.ui.primary.button", "添加图层"),
+						]),
 					])
-				]
-			)
-		}
-	};
+				])
+			]
+		)
+	}
 };
