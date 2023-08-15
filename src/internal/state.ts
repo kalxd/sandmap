@@ -280,7 +280,7 @@ export const removeCurrentLayer = (): Either<string, void> => {
 					}
 
 					state.layerList = NonEmptyList.unsafeCoerce(layerList);
-					state.active -= 1;
+					state.active = Math.max(0, state.active - 1);
 
 					syncAppState();
 				});

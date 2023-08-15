@@ -1,5 +1,5 @@
 import * as m from "mithril";
-import { modal, confirmText, alertText } from "drifloon/module/modal";
+import { modal, alertText, confirmTextAsync } from "drifloon/module/modal";
 import { AddLayerModal } from "../modal/addlayermodal";
 import * as State from "../../internal/state";
 import { pickKlass, selectKlass } from "drifloon/internal/attr";
@@ -66,10 +66,12 @@ const openAddLayerModal = async () => {
 };
 
 const removeLayer = async () => {
-	const r = await confirmText("确认删除当前图层？")
-	r.ifJust(() => {
-		State.removeCurrentLayer().ifLeft(alertText);
-	});
+	confirmTextAsync("确认删除当前图层？")
+		.chain(async () =>
+			State.removeCurrentLayer()
+				.ifLeft(alertText)
+				.toMaybe())
+		.run();
 };
 
 export const LayerSidebar: m.Component = {
