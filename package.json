@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"drifloon": "0.20.13",
+		"drifloon": "0.20.14",
 		"mithril": "^2.2.2",
 		"purify-ts": "^2.0.1"
 	},

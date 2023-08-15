@@ -42,7 +42,10 @@ const LayerItem: m.Component<LayerItemAttr> = {
 			.map(_ => attrs.layer.itemList)
 			.map(itemList => itemList.map((item, i) => m(
 				"div.menu", m("div.item", [
-					item.color,
+					State.caseToolItem(item, {
+						polyline: item => m("span", { style: `color: ${item.color}` }, "直线"),
+						polygon: item => m("span", { style: `color: ${item.color}` }, "多边形")
+					}),
 					m("i.icon.delete", { onclick: () => State.removeToolAt(attrs.index, i) })
 				]))
 			));
