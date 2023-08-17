@@ -69,6 +69,7 @@ export const MapNode: m.Component<MapNodeAttr> = {
 
 		tmap.addContextMenu(menu);
 		vnode.attrs.connectFinish(tmap);
+		m.redraw();
 	},
 	view: () => m("div", { style: "width: 100%; height: calc(100% - 49px); " }),
 };

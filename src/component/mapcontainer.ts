@@ -8,6 +8,7 @@ import { AppMenu } from "./widget/appmenu";
 import { LayerSidebar } from "./widget/layersidebar";
 import { MapNode } from "./widget/mapnode";
 import * as State from "../internal/state";
+import { SearchInput } from "./widget/searchinput";
 
 const MapXX = (): m.Component => {
 	const showAppLayerRef = new IORef<boolean>(false);
@@ -18,6 +19,9 @@ const MapXX = (): m.Component => {
 
 			const appLayerToggleE = () => showAppLayerRef.update(b => !b);
 
+			const search = State.appState.ask()
+				.map(state => m("div.item", m(SearchInput, { tmap: state.tmap } )));
+
 			return m.fragment({}, [
 				appLayer.extract(),
 				m("div", m("div.ui.top.attached.menu", [
@@ -25,13 +29,8 @@ const MapXX = (): m.Component => {
 						m("i.icon.map.signs"),
 						"图层"
 					]),
-					m("div.item", m("div.ui.icon.input", [
-						m("input", { placeholder: "搜索" }),
-						m("i.icon.search")
-					])),
-					m("ui.right.menu", [
-						m(AppMenu)
-					])
+					search.extract(),
+					m("ui.right.menu", m(AppMenu))
 				])),
 				m(MapNode, { connectFinish: State.initAppState }),
 			]);

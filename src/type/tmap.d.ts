@@ -145,4 +145,20 @@ declare module T {
 			callback: (target: PolylineDraw) => void
 		): void
 	}
+
+	interface LocalSearchOption {
+		pageCapacity: number;
+		onSearchComplete: (result: LocalSearchResult) => void;
+	}
+
+	interface LocalSearchResult {
+		getCount: () => number;
+		getPois: () => Array<{}>;
+	}
+
+	class LocalSearch {
+		constructor(map: Map, option: LocalSearchOption)
+
+		search(keyword: string, type: 1): void
+	}
 }
