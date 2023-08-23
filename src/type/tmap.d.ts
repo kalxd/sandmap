@@ -69,7 +69,8 @@ declare module T {
 	class Map {
 		constructor(dom: Element);
 
-		centerAndZoom(lgnlat: LngLat, zoom: number): void;
+		centerAndZoom(lnglat: LngLat, zoom: number): void;
+		panTo(lnglat: LngLat): void;
 		getZoom(): number;
 		getCenter(): LngLat;
 		addControl<T extends Control>(control: T): void;

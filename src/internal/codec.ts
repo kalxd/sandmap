@@ -17,7 +17,7 @@ const lnglatI = Codec.interface({
 	lat: cnumber
 });
 
-const lnglatCodec = Codec.custom<T.LngLat>({
+export const lnglatCodec = Codec.custom<T.LngLat>({
 	decode: input => lnglatI.decode(input)
 		.map(o => new T.LngLat(o.lng, o.lat)),
 

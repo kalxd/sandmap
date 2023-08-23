@@ -2,6 +2,20 @@ import * as m from "mithril";
 import { PlainInput } from "drifloon/element/input";
 import { IORef } from "drifloon/data/ref";
 import { Just, Maybe, Nothing } from "purify-ts";
+import { lnglatCodec } from "../../internal/codec";
+
+const mapMoveTo = (
+	tmap: T.Map,
+	lng: string,
+	lat: string
+): void => {
+	lnglatCodec.decode({ lng: Number(lng), lat: Number(lat) })
+		.ifRight(lnglat => {
+			console.log(lnglat);
+			tmap.panTo(lnglat);
+		})
+		.ifLeft(console.log);
+};
 
 interface CaseSearchResult<T> {
 	normal: (result: Array<T.LocalSearchResultPos>) => T;
@@ -48,17 +62,29 @@ export const SearchInput = (
 	const searchE = (r: T.LocalSearchResult) => {
 		const menu = caseSearchResult(r, {
 			normal: result => result.map(item => {
-				return m("div.item", item.name);
+				const f = () => {
+					const [lng, lat] = item.lonlat.split(" ");
+					mapMoveTo(tmap, lng, lat);
+				};
+				return m("div.item", { onclick: f }, item.name)
 			}),
 			statistic: result => result.priorityCitys.map(item => {
-				return m("div.item", item.name)
+				const f = () => {
+					const lnglat = new T.LngLat(item.lon, item.lat);
+					tmap.panTo(lnglat);
+				};
+				return m("div.item", { onclick: f }, item.name);
 			}),
 			area: result => {
-				return [m("div.item", result.name)];
+				const f = () => {
+					const [lng, lat] = result.lonlat.split(",");
+					mapMoveTo(tmap, lng, lat);
+				};
+				return [
+					m("div.item", { onclick: f }, result.name)
+				];
 			},
-			suggest: result => result.map(item => {
-				return m("div.item", item.name);
-			})
+			suggest: result => result.map(item => m("div.item", item.name))
 		});
 
 		state.putAt("result", Just(menu));
