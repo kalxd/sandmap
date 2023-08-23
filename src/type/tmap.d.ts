@@ -18,7 +18,7 @@ declare module T {
 	}
 
 	class Control {}
-	class OverLayer {}
+	class OverLay {}
 
 	module Control {
 		interface ZoomOption {
@@ -46,8 +46,8 @@ declare module T {
 		opacity?: number;
 	}
 
-	class Polyline extends OverLayer {
-		constructor(points: Array<LngLat>, option?: PolylineOption)
+	class Polyline extends OverLay {
+		constructor(points: Array<LngLat>, option?: PolylineOption);
 	}
 
 	interface PolygonOption {
@@ -56,8 +56,8 @@ declare module T {
 		fillOpacity?: number;
 	}
 
-	class Polygon extends OverLayer {
-		constructor(points: Array<LngLat>, option?: PolygonOption)
+	class Polygon extends OverLay {
+		constructor(points: Array<LngLat>, option?: PolygonOption);
 	}
 
 	type MapBlankEventName = "zoomend" | "moveend";
@@ -69,26 +69,26 @@ declare module T {
 	class Map {
 		constructor(dom: Element);
 
-		centerAndZoom(lgnlat: LngLat, zoom: number): void
-		getZoom(): number
-		getCenter(): LngLat
-		addControl<T extends Control>(control: T): void
-		addOverLay<T extends OverLayer>(overlayer: T): void
-		removeOverLay<T extends OverLayer>(overlayer: T): void
-		addContextMenu(menu: ContextMenu): void
+		centerAndZoom(lgnlat: LngLat, zoom: number): void;
+		getZoom(): number;
+		getCenter(): LngLat;
+		addControl<T extends Control>(control: T): void;
+		addOverLay<T extends OverLay>(overlayer: T): void;
+		removeOverLay<T extends OverLay>(overlayer: T): void;
+		addContextMenu(menu: ContextMenu): void;
 
 		addEventListener<Name extends MapBlankEventName>(
 			eventName: Name,
 			cb: (event: MapBlankEvent<Name>) => void
-		): void
+		): void;
 		removeEventListener<Name extends MapBlankEventName>(
 			eventName: Name,
 			cb: (event: MapBlankEvent<Name>) => void
-		): void
+		): void;
 	}
 
 	class MenuItem {
-		constructor(text: string, callback: () => void)
+		constructor(text: string, callback: () => void);
 	}
 
 	interface ContextMapOption {
@@ -96,9 +96,9 @@ declare module T {
 	}
 
 	class ContextMenu {
-		constructor(option: ContextMapOption)
+		constructor(option: ContextMapOption);
 
-		addItem(item: MenuItem): void
+		addItem(item: MenuItem): void;
 	}
 
 	interface PolylineToolOption {
@@ -115,15 +115,15 @@ declare module T {
 	}
 
 	class PolylineTool {
-		constructor(map: Map, option?: PolylineToolOption)
+		constructor(map: Map, option?: PolylineToolOption);
 
-		open(): void
-		clear(): void
+		open(): void;
+		clear(): void;
 
 		addEventListener<Name extends PolylineEventName>(
 			eventName: Name,
 			callback: (target: PolylineDraw) => void
-		): void
+		): void;
 	}
 
 	type PolygonEventName = "draw";
@@ -135,15 +135,15 @@ declare module T {
 	}
 
 	class PolygonTool {
-		constructor(map: Map, option?: PolygonToolOption)
+		constructor(map: Map, option?: PolygonToolOption);
 
-		open(): void
-		clear(): void
+		open(): void;
+		clear(): void;
 
 		addEventListener<Name extends PolygonEventName>(
 			eventName: Name,
 			callback: (target: PolylineDraw) => void
-		): void
+		): void;
 	}
 
 	interface LocalSearchOption {
@@ -151,14 +151,46 @@ declare module T {
 		onSearchComplete: (result: LocalSearchResult) => void;
 	}
 
+	interface LocalSearchCity {
+		name: string;
+		lat: number;
+		lon: number;
+		count: string;
+	}
+
+	interface LocalSearchResultPos {
+		address: string;
+		name: string;
+		lonlat: string;
+	}
+
+	interface LocalSearchResultStatistic {
+		priorityCitys: Array<LocalSearchCity>;
+	}
+
+	interface LocalSearchResultArea {
+		level: number;
+		lonlat: string;
+		name: string;
+	}
+
+	interface LocalSearchResultSuggestion {
+		address: string;
+		name: string;
+	}
+
 	interface LocalSearchResult {
+		getResultType: () => 1 | 2 | 3 | 4 | 5 | 7;
 		getCount: () => number;
-		getPois: () => Array<{}>;
+		getPois: () => Array<LocalSearchResultPos>;
+		getStatistics: () => LocalSearchResultStatistic;
+		getArea: () => LocalSearchResultArea;
+		getSuggest: () => Array<LocalSearchResultSuggestion>;
 	}
 
 	class LocalSearch {
-		constructor(map: Map, option: LocalSearchOption)
+		constructor(map: Map, option: LocalSearchOption);
 
-		search(keyword: string, type: 1): void
+		search(keyword: string): void;
 	}
 }

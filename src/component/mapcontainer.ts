@@ -20,7 +20,7 @@ const MapXX = (): m.Component => {
 			const appLayerToggleE = () => showAppLayerRef.update(b => !b);
 
 			const search = State.appState.ask()
-				.map(state => m("div.item", m(SearchInput, { tmap: state.tmap } )));
+				.map(state => m(SearchInput, { tmap: state.tmap } ));
 
 			return m.fragment({}, [
 				appLayer.extract(),
