@@ -4,7 +4,7 @@ import { waitting } from "drifloon/module/loading";
 import { loadMapScript } from "../internal/state";
 import { SettingOption } from "../internal/storage";
 import { EitherAsync, Maybe, Right } from "purify-ts";
-import { AppMenu } from "./widget/appmenu";
+import { AppMenu, AppMenuAttr } from "./widget/appmenu";
 import { LayerSidebar } from "./widget/layersidebar";
 import { MapNode } from "./widget/mapnode";
 import * as State from "../internal/state";
@@ -12,6 +12,11 @@ import { SearchInput } from "./widget/searchinput";
 
 const MapXX = (): m.Component => {
 	const showAppLayerRef = new IORef<boolean>(false);
+
+	const appMenuAttr: AppMenuAttr = {
+		connectLogout: State.clearSetting
+	};
+
 	return {
 		view: () => {
 			const appLayer = showAppLayerRef.asks(Maybe.fromFalsy)
@@ -30,7 +35,7 @@ const MapXX = (): m.Component => {
 						"图层"
 					]),
 					m("div.item", search.extract()),
-					m("ui.right.menu", m(AppMenu))
+					m("ui.right.menu", m(AppMenu, appMenuAttr))
 				])),
 				m(MapNode, { connectFinish: State.initAppState }),
 			]);

@@ -1,5 +1,5 @@
 import { Either, Just, List, Maybe, NonEmptyList, Nothing } from "purify-ts";
-import { SettingOption, readUserData, writeUserData } from "./storage";
+import * as Storage from "./storage";
 import { IORef } from "drifloon/data/ref";
 import { ItemType, Polygon, Polyline, UserData } from "./codec";
 import * as TMap from "./tmap";
@@ -13,10 +13,22 @@ const takeAt = <T>(xs: Array<T>, index: number): Maybe<[T, Array<T>]> => {
 };
 
 export interface SettingState {
-	setting: Maybe<SettingOption>;
+	setting: Maybe<Storage.SettingOption>;
 }
 
-const BASE_URL = "http://api.tianditu.gov.cn/api?v=4.0&tk=";
+export const initSetting = (): IORef<SettingState> => {
+	const state = Storage.readSetting();
+	return new IORef({ setting: state });
+};
+
+export const settingState = initSetting();
+
+export const clearSetting = (): void => {
+	settingState.putAt("setting", Nothing);
+	Storage.clearSetting();
+};
+
+const BASE_URL = "//api.tianditu.gov.cn/api?v=4.0&tk=";
 
 const mapLoadState = new IORef<boolean>(false);
 
@@ -25,8 +37,19 @@ export const loadMapScript = (token: string): Promise<void> => {
 		return Promise.resolve();
 	}
 
+	const mapUrl = (() => {
+		const { protocol } = window.location;
+
+		if (protocol === "https:") {
+			return `https:${BASE_URL}`;
+		}
+		else {
+			return `http:${BASE_URL}`;
+		}
+	})();
+
 	const script = document.createElement("script");
-	script.src = `${BASE_URL}${token}`;
+	script.src = `${mapUrl}${token}`;
 
 	document.body.appendChild(script);
 
@@ -177,11 +200,11 @@ const syncAppState = (): void => {
 	appState.ask()
 		.ifJust(syncLayerItemVisible)
 		.map(appStateIntoUserData)
-		.ifJust(writeUserData);
+		.ifJust(Storage.writeUserData);
 };
 
 export const initAppState = (tmap: T.Map): void => {
-	const userData = readUserData();
+	const userData = Storage.readUserData();
 	const state = userDataIntoAppState(tmap, userData);
 	appState.put(Just(state));
 };

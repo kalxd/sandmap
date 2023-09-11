@@ -28,6 +28,7 @@ export const writeSetting = (setting: SettingOption): void => {
 	localStorage.setItem(SETTING_KEY, o);
 };
 
+export const clearSetting = (): void => localStorage.removeItem(SETTING_KEY);
 
 // 最近地图显示的坐标
 const LAST_LNGLAT_KEY = "last_lnglat";

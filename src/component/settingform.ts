@@ -1,6 +1,6 @@
 import * as m from "mithril";
 import { Either, Just } from "purify-ts";
-import { FormData, IORef } from "drifloon/data/ref";
+import { FormData } from "drifloon/data/ref";
 import { RequireField, Field } from "drifloon/element/form";
 import { PlainInput } from "drifloon/element/input";
 import { Segment, SegmentAttr, SegmentShape } from "drifloon/element/segment";
@@ -11,20 +11,16 @@ import { Button } from "drifloon/element/button";
 import { EmLevel } from "drifloon/data/var";
 import { must, isNotEmpty } from "drifloon/data/validate";
 import { SettingOption, writeSetting } from "../internal/storage";
-import { SettingState } from "../internal/state";
+import { settingState } from "../internal/state";
 
 interface SettingFormData {
 	token: string;
 }
 
-export interface SettingFormAttr {
-	state: IORef<SettingState>;
-}
-
 const validateForm = (data: SettingFormData): Either<Array<string>, SettingOption> =>
 	must("token", isNotEmpty(data.token)).collect(token => ({ token }));
 
-export const SettingForm = (vnode: m.Vnode<SettingFormAttr>): m.Component<SettingFormAttr> => {
+export const SettingForm = (): m.Component => {
 	const formdata = new FormData<SettingFormData>({
 		token: ""
 	});
@@ -33,7 +29,7 @@ export const SettingForm = (vnode: m.Vnode<SettingFormAttr>): m.Component<Settin
 		formdata.validate(validateForm)
 			.ifRight(data => {
 				writeSetting(data);
-				vnode.attrs.state.putAt("setting", Just(data))
+				settingState.putAt("setting", Just(data))
 			});
 	};
 
