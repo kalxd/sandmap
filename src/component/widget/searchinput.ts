@@ -60,7 +60,6 @@ const renderSearchResult = (tmap: T.Map, result: T.LocalSearchResult): m.Childre
 	caseSearchResult(result, {
 		normal: result => result.map(item => {
 			const f = () => {
-				console.log("do normal");
 				const [lng, lat] = item.lonlat.split(" ");
 				mapMoveTo(tmap, lng, lat);
 			};
@@ -68,14 +67,12 @@ const renderSearchResult = (tmap: T.Map, result: T.LocalSearchResult): m.Childre
 		}),
 		statistic: result => result.priorityCitys.map(item => {
 			const f = () => {
-				console.log("do static");
 				const lnglat = new T.LngLat(item.lon, item.lat);
 				tmap.panTo(lnglat);
 			};
 			return m("div.item", { onclick: f }, item.name);
 		}),
 		area: result => {
-			console.log("do area");
 			const f = () => {
 				const [lng, lat] = result.lonlat.split(",");
 				mapMoveTo(tmap, lng, lat);
@@ -142,7 +139,6 @@ export const SearchInput = (
 						])
 					]),
 					searchMenu.extract()
-					// m("div.ui.menu.selection.transition.visible", state.askAt("result").extract())
 				]));
 		}
 	};
