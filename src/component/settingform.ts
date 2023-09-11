@@ -29,7 +29,7 @@ export const SettingForm = (): m.Component => {
 		formdata.validate(validateForm)
 			.ifRight(data => {
 				writeSetting(data);
-				settingState.putAt("setting", Just(data))
+				settingState.putAt("setting", Just(data));
 			});
 	};
 

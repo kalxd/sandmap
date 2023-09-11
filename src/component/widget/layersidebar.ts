@@ -91,7 +91,7 @@ export const LayerSidebar: m.Component = {
 
 		return m(
 			"div.ui.left.fixed.vertical.menu",
-			{ style: "z-index: 10000; top: 49px;" },
+			{ style: "z-index: 10000; top: 68px;" },
 			[
 				...(layerList ?? []),
 				m("div.divider"),

@@ -56,20 +56,24 @@ export const MapNode: m.Component<MapNodeAttr> = {
 	oncreate: vnode => {
 		const tmap = TMap.init(vnode.dom);
 
-		const menu = new T.ContextMenu({});
-		{
-			const menuItem = new T.MenuItem("添加线段", () => openLineModal(tmap));
-			menu.addItem(menuItem);
-		}
+		const initMenu = () => {
+			const menu = new T.ContextMenu({});
+			{
+				const menuItem = new T.MenuItem("添加线段", () => openLineModal(tmap));
+				menu.addItem(menuItem);
+			}
 
-		{
-			const menuItem = new T.MenuItem("添加多边形", () => openPolygonModal(tmap));
-			menu.addItem(menuItem);
-		}
+			{
+				const menuItem = new T.MenuItem("添加多边形", () => openPolygonModal(tmap));
+				menu.addItem(menuItem);
+			}
 
-		tmap.addContextMenu(menu);
-		vnode.attrs.connectFinish(tmap);
-		m.redraw();
+			tmap.addContextMenu(menu);
+			vnode.attrs.connectFinish(tmap);
+			m.redraw();
+		};
+
+		setTimeout(initMenu, 500);
 	},
-	view: () => m("div", { style: "width: 100%; height: calc(100% - 49px); " }),
+	view: () => m("div", { style: "width: 100%; height: calc(100% - 68px); " }),
 };
