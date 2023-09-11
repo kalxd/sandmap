@@ -3,6 +3,8 @@ import { PlainInput } from "drifloon/element/input";
 import { IORef } from "drifloon/data/ref";
 import { Just, Maybe, Nothing } from "purify-ts";
 import { lnglatCodec } from "../../internal/codec";
+import { Outter } from "drifloon/abstract/outter";
+import { pickKlass, selectKlass } from "drifloon/internal/attr";
 
 const mapMoveTo = (
 	tmap: T.Map,
@@ -51,8 +53,39 @@ export interface SearchInputAttr {
 interface InputState {
 	keyword: string;
 	localsearch: T.LocalSearch;
-	result: Maybe<Array<m.Vnode>>;
+	result: Maybe<T.LocalSearchResult>;
 }
+
+const renderSearchResult = (tmap: T.Map, result: T.LocalSearchResult): m.Children =>
+	caseSearchResult(result, {
+		normal: result => result.map(item => {
+			const f = () => {
+				console.log("do normal");
+				const [lng, lat] = item.lonlat.split(" ");
+				mapMoveTo(tmap, lng, lat);
+			};
+			return m("div.item", { onclick: f }, item.name)
+		}),
+		statistic: result => result.priorityCitys.map(item => {
+			const f = () => {
+				console.log("do static");
+				const lnglat = new T.LngLat(item.lon, item.lat);
+				tmap.panTo(lnglat);
+			};
+			return m("div.item", { onclick: f }, item.name);
+		}),
+		area: result => {
+			console.log("do area");
+			const f = () => {
+				const [lng, lat] = result.lonlat.split(",");
+				mapMoveTo(tmap, lng, lat);
+			};
+			return [
+				m("div.item", { onclick: f }, result.name)
+			];
+		},
+		suggest: result => result.map(item => m("div.item", item.name))
+	});
 
 export const SearchInput = (
 	vnode: m.Vnode<SearchInputAttr>
@@ -60,34 +93,7 @@ export const SearchInput = (
 	const { tmap } = vnode.attrs;
 
 	const searchE = (r: T.LocalSearchResult) => {
-		const menu = caseSearchResult(r, {
-			normal: result => result.map(item => {
-				const f = () => {
-					const [lng, lat] = item.lonlat.split(" ");
-					mapMoveTo(tmap, lng, lat);
-				};
-				return m("div.item", { onclick: f }, item.name)
-			}),
-			statistic: result => result.priorityCitys.map(item => {
-				const f = () => {
-					const lnglat = new T.LngLat(item.lon, item.lat);
-					tmap.panTo(lnglat);
-				};
-				return m("div.item", { onclick: f }, item.name);
-			}),
-			area: result => {
-				const f = () => {
-					const [lng, lat] = result.lonlat.split(",");
-					mapMoveTo(tmap, lng, lat);
-				};
-				return [
-					m("div.item", { onclick: f }, result.name)
-				];
-			},
-			suggest: result => result.map(item => m("div.item", item.name))
-		});
-
-		state.putAt("result", Just(menu));
+		state.putAt("result", Just(r));
 		m.redraw();
 	};
 
@@ -99,27 +105,45 @@ export const SearchInput = (
 		}),
 		result: Nothing
 	});
+	const isVisibleState = new IORef<boolean>(false);
+
+	const visibeE = () => isVisibleState.put(true);
 
 	const startSearchE = () => {
 		const keyword = state.askAt("keyword");
 		state.askAt("localsearch").search(keyword);
+		visibeE();
 	};
 
 	return {
 		view: () => {
-			return m("div.ui.selection.visible.dropdown", { style: "z-index: 10000" }, [
-				m("div.ui.action.input", [
-					m(PlainInput, {
-						value: state.askAt("keyword"),
-						connectChange: s => state.putAt("keyword", s),
-						placeholder: "搜索"
-					}),
-					m("button.ui.icon.button", { onclick: startSearchE }, [
-						m("i.icon.search")
-					])
-				]),
-				m("div.ui.menu.selection.transition.visible", state.askAt("result").extract())
+			const outterClickE = () => isVisibleState.put(false);
+			const klass = pickKlass([
+				selectKlass("active", isVisibleState.ask())
 			]);
+
+			const searchMenu = state.askAt("result")
+				.filter(_ => isVisibleState.ask())
+				.map(r => renderSearchResult(tmap, r))
+				.map(menu => m("div.ui.menu.selection.transition.visible", { class: klass }, menu));
+
+			return m(
+				Outter,
+				{connectOutterClick: outterClickE },
+				m("div.ui.selection.visible.dropdown", { style: "z-index: 10000; padding: 0;", class: klass }, [
+					m("div.ui.action.input", { onclick: visibeE } , [
+						m(PlainInput, {
+							value: state.askAt("keyword"),
+							connectChange: s => state.putAt("keyword", s),
+							placeholder: "搜索"
+						}),
+						m("button.ui.icon.button", { onclick: startSearchE }, [
+							m("i.icon.search")
+						])
+					]),
+					searchMenu.extract()
+					// m("div.ui.menu.selection.transition.visible", state.askAt("result").extract())
+				]));
 		}
 	};
 };

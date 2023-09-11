@@ -29,7 +29,7 @@ const MapXX = (): m.Component => {
 						m("i.icon.map.signs"),
 						"图层"
 					]),
-					search.extract(),
+					m("div.item", search.extract()),
 					m("ui.right.menu", m(AppMenu))
 				])),
 				m(MapNode, { connectFinish: State.initAppState }),
